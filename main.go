@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/urfave/cli"
 	"io/ioutil"
 	"os"
@@ -43,9 +44,12 @@ func Process(filePath string) error {
 	}
 	lines := strings.Split(string(bytes), "\n")
 	marks := FindAndParseMarks(lines)
-	err = AnalyzeFuncSignature(marks)
-	if err != nil {
-		return err
+	for lineIndex := range marks {
+		line := lines[lineIndex]
+		_, err := AnalyzeHandlerFuncSig(line)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -69,6 +73,37 @@ func FindAndParseMarks(lines []string) (marks map[int]string) {
 }
 
 //goland:noinspection GoUnusedParameter
-func AnalyzeFuncSignature(marksLineIndex map[int]string) error {
-	return nil
+func AnalyzeHandlerFuncSig(line string) (*HandlerFuncSig, error) {
+	// 匹配函数声明的正则
+	// TODO 完善其他类型（目前只能匹配String和处理类型）
+	re := regexp.MustCompile("func (?P<funcName>[^0-9\\W]\\w*)\\((?P<args>|(([^0-9\\W]\\w*) (string))(, ?([^0-9\\W]\\w*) (string))*)\\) (?P<resultType>string) {")
+	matches := re.FindStringSubmatch(line)
+	if len(matches) == 0 {
+		return nil, fmt.Errorf("给定的行不是函数声明：%s", strings.TrimRight(line, "\n"))
+	}
+	groups := re.SubexpNames()
+	matchMap := make(map[string]string)
+	for groupIndex, groupName := range groups {
+		matchMap[groupName] = matches[groupIndex]
+	}
+	funcName := matchMap["funcName"]
+	args := matchMap["args"]
+	resultType := matchMap["resultType"]
+	argsSlice := strings.Split(args, ",")
+	var argTypes []string
+	for _, argEntry := range argsSlice {
+		argType := strings.SplitN(strings.TrimSpace(argEntry), " ", 2)[1]
+		argTypes = append(argTypes, argType)
+	}
+	return &HandlerFuncSig{
+		FuncName:   funcName,
+		ArgTypes:   argTypes,
+		ResultType: resultType,
+	}, nil
+}
+
+type HandlerFuncSig struct {
+	FuncName   string
+	ArgTypes   []string
+	ResultType string
 }

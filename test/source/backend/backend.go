@@ -1,10 +1,11 @@
-package main
+package backend
 
 import (
 	"github.com/gin-gonic/gin"
 )
 
-func backendMain() {
+//goland:noinspection GoUnusedFunction
+func mainFunc() {
 	r := gin.Default()
 	r.GET("/concatStrings", func(c *gin.Context) {
 		a := c.Query("a")

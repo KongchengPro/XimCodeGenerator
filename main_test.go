@@ -21,3 +21,22 @@ func TestFindMarks(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestAnalyzeHandlerFuncSig(t *testing.T) {
+	sig, err := AnalyzeHandlerFuncSig("func concatStrings(a string, b string) string {")
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+	fmt.Println(sig)
+	if !reflect.DeepEqual(sig, &HandlerFuncSig{
+		FuncName: "concatStrings",
+		ArgTypes: []string{
+			"string",
+			"string",
+		},
+		ResultType: "string",
+	}) {
+		t.Fail()
+	}
+}
