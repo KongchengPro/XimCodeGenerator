@@ -1,0 +1,2 @@
+GET http://localhost:8080/concatStrings?a=A&b=B
+Accept: text/plain
