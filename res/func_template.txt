@@ -1,0 +1,15 @@
+func %FuncName%(%Args%) %ResultType% {
+    resp, err := http.Get("http://%URN%")
+    if err != nil {
+        fmt.Println(err)
+        return ""
+    }
+    defer func() {
+        err = resp.Body.Close()
+        if err != nil {
+            fmt.Println(err)
+        }
+    }()
+    body, err := ioutil.ReadAll(resp.Body)
+    return string(body)
+}

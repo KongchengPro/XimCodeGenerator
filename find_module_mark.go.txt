@@ -12,7 +12,7 @@ import (
 	. "github.com/kongchengpro/xim/components/view"
 	"github.com/kongchengpro/xim/types/callback"
 	. "github.com/kongchengpro/xim/types/component"
-	backend "main/backend"
+	funcs "main/backend"
 )
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 					c, ok := dom.GetComponentByPath("MainText").(*Text)
 					if ok {
 						go func() {
-							c.Content = backend.ConcatStrings("Hello ", "Kogic")
+							c.Content = funcs.ConcatStrings("Hello ", "Kogic")
 							xim.Refresh(c)
 						}()
 					}
