@@ -1,5 +1,5 @@
 func %FuncName%(%Args%) %ResultType% {
-    resp, err := http.Get("http://%URN%")
+    resp, err := http.Get("http://%URI%")
     if err != nil {
         fmt.Println(err)
         return ""
